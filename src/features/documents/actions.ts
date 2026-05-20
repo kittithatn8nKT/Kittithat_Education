@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { requireRole, requireSession } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -7,6 +8,7 @@ import { buildStoragePath, pathBelongsToTenant } from "@/lib/files/path";
 import { classifyDocumentType, STORAGE_BUCKET_DOCUMENTS } from "@/lib/files/constants";
 import { validateFile } from "@/lib/files/validation";
 import type { UploadConfirmation, UploadTicket } from "@/lib/files/types";
+import { processOcrForVersion } from "@/lib/ocr/process";
 import {
   confirmUploadSchema,
   createCategorySchema,
@@ -117,8 +119,50 @@ export async function confirmUpload(input: ConfirmUploadInput): Promise<UploadCo
   await supabase.from("documents").update({ current_version_id: ver.id }).eq("id", doc.id);
 
   await writeUploadLog(session, parsed, "completed", ver.id, undefined, parsed.path);
+
+  // Fire-and-forget OCR after the response is sent. `after()` keeps the
+  // serverless function alive until the work finishes without blocking
+  // the user's UI.
+  after(async () => {
+    try {
+      await processOcrForVersion(ver.id);
+    } catch (err) {
+      console.error("Background OCR failed for version", ver.id, err);
+    }
+  });
+
   revalidatePath("/documents");
   return { document_id: doc.id, version_id: ver.id };
+}
+
+/**
+ * Manually re-queue OCR for a single version. Resets ocr_status from
+ * 'failed' to 'pending', then immediately processes. Admin / department
+ * head only — anyone else gets denied by requireRole.
+ */
+export async function retryOcrForVersion(input: { version_id: string }) {
+  await requireRole(["institution_admin", "department_head"]);
+
+  const supabase = await createSupabaseServerClient();
+  // Reset the row so processOcrForVersion will claim it (RLS lets the
+  // user update their own institution's rows; ocr_attempt cap still enforced
+  // inside processOcrForVersion).
+  const { error } = await supabase
+    .from("document_versions")
+    .update({ ocr_status: "pending", ocr_error: null })
+    .eq("id", input.version_id);
+  if (error) throw new Error(error.message);
+
+  after(async () => {
+    try {
+      await processOcrForVersion(input.version_id);
+    } catch (err) {
+      console.error("Retry OCR failed for version", input.version_id, err);
+    }
+  });
+
+  revalidatePath("/documents");
+  return { queued: true };
 }
 
 // ===========================================================================

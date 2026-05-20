@@ -1,22 +1,33 @@
 "use client";
 
 import { useTransition } from "react";
-import { Download, Trash2 } from "lucide-react";
+import { Download, RefreshCcw, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { STORAGE_BUCKET_DOCUMENTS } from "@/lib/files/constants";
-import { softDeleteDocument } from "../actions";
+import { retryOcrForVersion, softDeleteDocument } from "../actions";
+import type { OcrStatus } from "../types";
 
 interface Props {
   documentId: string;
   filePath: string;
   fileName: string;
+  /** Pass the current OCR status to surface a retry button on failure. */
+  versionId?: string;
+  ocrStatus?: OcrStatus;
 }
 
-export function DocumentRowActions({ documentId, filePath, fileName }: Props) {
+export function DocumentRowActions({
+  documentId,
+  filePath,
+  fileName,
+  versionId,
+  ocrStatus,
+}: Props) {
   const [isDownloading, startDownload] = useTransition();
   const [isDeleting, startDelete] = useTransition();
+  const [isRetrying, startRetry] = useTransition();
 
   function handleDownload() {
     startDownload(async () => {
@@ -29,7 +40,6 @@ export function DocumentRowActions({ documentId, filePath, fileName }: Props) {
           toast.error(error?.message ?? "ดาวน์โหลดไม่สำเร็จ");
           return;
         }
-        // Open in a new tab — keeps user on the documents list.
         const a = document.createElement("a");
         a.href = data.signedUrl;
         a.download = fileName;
@@ -56,8 +66,34 @@ export function DocumentRowActions({ documentId, filePath, fileName }: Props) {
     });
   }
 
+  function handleRetryOcr() {
+    if (!versionId) return;
+    startRetry(async () => {
+      try {
+        await retryOcrForVersion({ version_id: versionId });
+        toast.success("เริ่มประมวลผล OCR อีกครั้ง");
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "ลองใหม่ไม่สำเร็จ");
+      }
+    });
+  }
+
+  const showRetry = ocrStatus === "failed" && versionId;
+
   return (
     <div className="flex items-center gap-1">
+      {showRetry && (
+        <Button
+          type="button"
+          size="icon-sm"
+          variant="ghost"
+          onClick={handleRetryOcr}
+          disabled={isRetrying}
+          aria-label="Retry OCR"
+        >
+          <RefreshCcw className="h-4 w-4" />
+        </Button>
+      )}
       <Button
         type="button"
         size="icon-sm"

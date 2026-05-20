@@ -155,6 +155,12 @@
     "category_add": "Add category",
     "category_created": "Category created",
     "category_deleted": "Category deleted",
-    "category_delete_confirm": "Delete category \"{name}\"? Documents in this category will become uncategorised."
+    "category_delete_confirm": "Delete category \"{name}\"? Documents in this category will become uncategorised.",
+    "col_ocr": "OCR",
+    "ocr_status_pending": "Queued",
+    "ocr_status_processing": "Processing",
+    "ocr_status_completed": "Completed",
+    "ocr_status_failed": "Failed",
+    "ocr_status_skipped": "Skipped"
   }
 }

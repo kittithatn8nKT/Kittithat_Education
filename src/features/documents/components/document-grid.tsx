@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import type { DocumentRow } from "../types";
 import { DocumentRowActions } from "./document-row-actions";
 import { FileIcon } from "./file-icon";
+import { OcrStatusBadge } from "./ocr-status-badge";
 
 interface Props {
   rows: DocumentRow[];
@@ -53,6 +54,14 @@ export function DocumentGrid({ rows, selectedIds, onToggle }: Props) {
               {row.version?.file_size_bytes && (
                 <span>{formatFileSize(row.version.file_size_bytes)}</span>
               )}
+              {row.version && (
+                <OcrStatusBadge
+                  status={row.version.ocr_status}
+                  attempt={row.version.ocr_attempt}
+                  maxAttempts={row.version.ocr_max_attempts}
+                  error={row.version.ocr_error}
+                />
+              )}
             </div>
             <div className="mt-auto flex items-center justify-between">
               <span className="text-muted-foreground text-xs">
@@ -63,6 +72,8 @@ export function DocumentGrid({ rows, selectedIds, onToggle }: Props) {
                   documentId={row.id}
                   filePath={row.version.file_path}
                   fileName={row.version.file_name}
+                  versionId={row.version.id}
+                  ocrStatus={row.version.ocr_status}
                 />
               )}
             </div>

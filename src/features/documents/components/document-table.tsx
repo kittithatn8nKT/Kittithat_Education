@@ -16,6 +16,7 @@ import { formatThaiDate } from "@/lib/utils";
 import type { DocumentRow } from "../types";
 import { DocumentRowActions } from "./document-row-actions";
 import { FileIcon } from "./file-icon";
+import { OcrStatusBadge } from "./ocr-status-badge";
 
 interface Props {
   rows: DocumentRow[];
@@ -48,6 +49,7 @@ export function DocumentTable({ rows, selectedIds, onToggle, onToggleAll }: Prop
             <TableHead className="hidden md:table-cell">{t("col_type")}</TableHead>
             <TableHead className="hidden md:table-cell">{t("col_size")}</TableHead>
             <TableHead className="hidden lg:table-cell">{t("col_uploaded")}</TableHead>
+            <TableHead className="hidden md:table-cell">{t("col_ocr")}</TableHead>
             <TableHead className="w-24 text-right">{t("col_actions")}</TableHead>
           </TableRow>
         </TableHeader>
@@ -89,12 +91,26 @@ export function DocumentTable({ rows, selectedIds, onToggle, onToggleAll }: Prop
                 <TableCell className="text-muted-foreground hidden text-sm lg:table-cell">
                   {formatThaiDate(row.created_at)}
                 </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  {row.version ? (
+                    <OcrStatusBadge
+                      status={row.version.ocr_status}
+                      attempt={row.version.ocr_attempt}
+                      maxAttempts={row.version.ocr_max_attempts}
+                      error={row.version.ocr_error}
+                    />
+                  ) : (
+                    <span className="text-muted-foreground text-xs">—</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-right">
                   {row.version && (
                     <DocumentRowActions
                       documentId={row.id}
                       filePath={row.version.file_path}
                       fileName={row.version.file_name}
+                      versionId={row.version.id}
+                      ocrStatus={row.version.ocr_status}
                     />
                   )}
                 </TableCell>

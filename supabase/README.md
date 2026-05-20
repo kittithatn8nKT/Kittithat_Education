@@ -14,6 +14,7 @@ Run in order from the Supabase SQL Editor (or `supabase db push` if you have the
 | 8     | `0008_storage_policies.sql`       | RLS on storage.objects for all 4 buckets             |
 | 9     | `0009_document_upload_logs.sql`   | Audit table for every upload attempt                 |
 | 10    | `0010_document_categories.sql`    | Tenant-managed category taxonomy for documents       |
+| 11    | `0011_document_ocr_jobs.sql`      | OCR attempt audit + retry counter on document_versions |
 
 After running migrations:
 

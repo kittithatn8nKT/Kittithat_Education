@@ -11,12 +11,19 @@ export interface DocumentCategory {
   sort_order: number;
 }
 
+export type OcrStatus = "pending" | "processing" | "completed" | "failed" | "skipped";
+
 export interface DocumentVersion {
   id: string;
   file_name: string;
   file_size_bytes: number | null;
   mime_type: string | null;
   file_path: string;
+  ocr_status: OcrStatus;
+  ocr_attempt: number;
+  ocr_max_attempts: number;
+  ocr_error: string | null;
+  ocr_completed_at: string | null;
 }
 
 export interface DocumentRow {

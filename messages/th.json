@@ -155,6 +155,12 @@
     "category_add": "เพิ่มหมวดหมู่",
     "category_created": "สร้างหมวดหมู่แล้ว",
     "category_deleted": "ลบหมวดหมู่แล้ว",
-    "category_delete_confirm": "ลบหมวดหมู่ \"{name}\"? เอกสารที่อยู่ในหมวดนี้จะถูกย้ายไปไม่มีหมวดหมู่"
+    "category_delete_confirm": "ลบหมวดหมู่ \"{name}\"? เอกสารที่อยู่ในหมวดนี้จะถูกย้ายไปไม่มีหมวดหมู่",
+    "col_ocr": "OCR",
+    "ocr_status_pending": "รอประมวลผล",
+    "ocr_status_processing": "กำลังประมวลผล",
+    "ocr_status_completed": "เสร็จสมบูรณ์",
+    "ocr_status_failed": "ล้มเหลว",
+    "ocr_status_skipped": "ไม่รองรับ"
   }
 }

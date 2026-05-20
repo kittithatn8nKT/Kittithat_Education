@@ -29,7 +29,7 @@ export async function listDocuments(filters: DocumentFilters): Promise<DocumentL
     .select(
       `id, title, document_type, status, created_at, created_by,
        category_id, department_id, current_version_id,
-       version:current_version_id (id, file_name, file_size_bytes, mime_type, file_path),
+       version:current_version_id (id, file_name, file_size_bytes, mime_type, file_path, ocr_status, ocr_attempt, ocr_max_attempts, ocr_error, ocr_completed_at),
        category:category_id (id, name, name_en, description, color, icon, sort_order)`,
       { count: "exact" }
     )
