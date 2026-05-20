@@ -1,22 +1,21 @@
 import { getTranslations } from "next-intl/server";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { FileText, CheckSquare, Users, Sparkles } from "lucide-react";
+import { CheckSquare, FileText, Sparkles, Users } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Membership } from "@/types/database";
+import { requireSession, sessionCan } from "@/lib/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default async function DashboardHomePage() {
+export default async function DashboardHomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
   const t = await getTranslations();
+  const session = await requireSession();
+  const params = await searchParams;
   const supabase = await createSupabaseServerClient();
 
-  const { data: memberships } = await supabase.from("my_memberships").select("*").limit(1);
-
-  const membership = (memberships?.[0] ?? null) as Membership | null;
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
+  // RLS scopes each query to the active institution automatically.
   const [docs, workflows, members] = await Promise.all([
     supabase.from("documents").select("id", { count: "exact", head: true }),
     supabase.from("workflows").select("id", { count: "exact", head: true }).eq("status", "pending"),
@@ -27,34 +26,36 @@ export default async function DashboardHomePage() {
   ]);
 
   const stats = [
-    {
-      label: t("dashboard.stat_documents"),
-      value: docs.count ?? 0,
-      icon: FileText,
-    },
+    { label: t("dashboard.stat_documents"), value: docs.count ?? 0, icon: FileText },
     {
       label: t("dashboard.stat_workflows_pending"),
       value: workflows.count ?? 0,
       icon: CheckSquare,
     },
-    {
-      label: t("dashboard.stat_members"),
-      value: members.count ?? 0,
-      icon: Users,
-    },
+    { label: t("dashboard.stat_members"), value: members.count ?? 0, icon: Users },
     { label: t("dashboard.stat_ai_usage"), value: 0, icon: Sparkles },
   ];
 
-  const isTrial = membership?.subscription_status === "trial";
+  const isTrial = session.active.subscription_status === "trial";
+  const canViewAudit = sessionCan(session, "audit", "view");
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">{t("dashboard.title")}</h1>
         <p className="text-muted-foreground mt-1 text-sm">
-          {t("dashboard.welcome")}, {user?.email}
+          {t("dashboard.welcome")}, {session.user.email}
         </p>
       </div>
+
+      {params.error === "forbidden" && (
+        <Alert variant="destructive">
+          <AlertTitle>403</AlertTitle>
+          <AlertDescription>
+            คุณไม่มีสิทธิ์เข้าหน้าดังกล่าว · You don&apos;t have permission to access that page.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {isTrial && (
         <Alert>
@@ -79,16 +80,18 @@ export default async function DashboardHomePage() {
         ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Phase 1 — Foundation</CardTitle>
-        </CardHeader>
-        <CardContent className="text-muted-foreground text-sm">
-          Authentication, multi-tenant data isolation, and the dashboard shell are live. Document
-          upload, OCR, AI summaries, RAG chat, workflows, and billing will be added in subsequent
-          phases. See <code className="bg-muted rounded px-1 py-0.5 text-xs">docs/ROADMAP.md</code>.
-        </CardContent>
-      </Card>
+      {canViewAudit && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Admin tools</CardTitle>
+          </CardHeader>
+          <CardContent className="text-muted-foreground text-sm">
+            You can see this card because your role is{" "}
+            <code className="bg-muted rounded px-1 py-0.5 text-xs">{session.role}</code>. Audit log
+            access goes here in Phase 4.
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { signOutAction } from "@/lib/auth";
 
 interface UserMenuProps {
   email: string;
@@ -53,7 +54,7 @@ export function UserMenu({ email, fullName }: UserMenuProps) {
           {t("common.profile")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <form action="/auth/signout" method="post">
+        <form action={signOutAction}>
           <DropdownMenuItem
             variant="destructive"
             render={<button type="submit" className="w-full" />}
