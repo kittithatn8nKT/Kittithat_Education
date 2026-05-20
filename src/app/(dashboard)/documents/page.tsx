@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { requireSession } from "@/lib/auth/session";
 import { can } from "@/lib/auth/rbac";
 import { DocumentsShell } from "@/features/documents/components/documents-shell";
-import { parseDocumentFilters } from "@/features/documents/hooks/use-document-filters";
+import { parseDocumentFilters } from "@/features/documents/filters";
 import {
   listCategories,
   listDepartmentsForFilter,
