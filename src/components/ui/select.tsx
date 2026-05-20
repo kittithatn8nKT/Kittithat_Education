@@ -106,10 +106,15 @@ function SelectLabel({ className, ...props }: SelectPrimitive.GroupLabel.Props) 
   );
 }
 
-function SelectItem({ className, children, ...props }: SelectPrimitive.Item.Props) {
+function SelectItem({ className, children, label, ...props }: SelectPrimitive.Item.Props) {
+  // base-ui Select.Value shows the matched item's `label` (or value if unset).
+  // Auto-derive label from string children so consumers can write the
+  // familiar Radix-style <SelectItem value="...">Label</SelectItem>.
+  const derivedLabel = label ?? (typeof children === "string" ? children : undefined);
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
+      label={derivedLabel}
       className={cn(
         "focus:bg-accent focus:text-accent-foreground not-data-[variant=destructive]:focus:**:text-accent-foreground relative flex w-full cursor-default items-center gap-1.5 rounded-md py-1 pr-8 pl-1.5 text-sm outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 *:[span]:last:flex *:[span]:last:items-center *:[span]:last:gap-2",
         className
