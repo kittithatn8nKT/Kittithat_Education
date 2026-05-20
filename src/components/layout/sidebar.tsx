@@ -25,14 +25,21 @@ export async function Sidebar() {
       </div>
       <nav className="p-3">
         <ul className="space-y-1">
-          {items.map((item) => (
-            <SidebarItem
-              key={item.href}
-              href={item.href}
-              label={t(item.labelKey as Parameters<typeof t>[0])}
-              icon={item.icon}
-            />
-          ))}
+          {items.map((item) => {
+            // Render the icon HERE on the server. The resulting element is a
+            // plain JSX object that serializes across the RSC boundary; the
+            // raw LucideIcon function would not.
+            const Icon = item.icon;
+            return (
+              <SidebarItem
+                key={item.href}
+                href={item.href}
+                label={t(item.labelKey as Parameters<typeof t>[0])}
+              >
+                <Icon className="h-4 w-4" />
+              </SidebarItem>
+            );
+          })}
         </ul>
       </nav>
     </aside>

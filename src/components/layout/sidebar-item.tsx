@@ -2,16 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface SidebarItemProps {
   href: string;
   label: string;
-  icon: LucideIcon;
+  /** Rendered icon element — passed as children so we don't cross
+   *  the RSC boundary with a function reference (React 19 strict). */
+  children: ReactNode;
 }
 
-export function SidebarItem({ href, label, icon: Icon }: SidebarItemProps) {
+export function SidebarItem({ href, label, children }: SidebarItemProps) {
   const pathname = usePathname();
   const active = pathname === href || pathname.startsWith(href + "/");
 
@@ -26,7 +28,7 @@ export function SidebarItem({ href, label, icon: Icon }: SidebarItemProps) {
             : "text-sidebar-foreground hover:bg-sidebar-accent/60"
         )}
       >
-        <Icon className="h-4 w-4" />
+        {children}
         {label}
       </Link>
     </li>
