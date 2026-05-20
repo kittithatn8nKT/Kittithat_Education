@@ -12,6 +12,7 @@ Run in order from the Supabase SQL Editor (or `supabase db push` if you have the
 | 6     | `0006_security_hardening.sql`     | Lock down trigger fns + revoke anon helpers          |
 | 7     | `0007_align_profiles_schema.sql`  | Reconcile pre-existing profiles table from prior setup |
 | 8     | `0008_storage_policies.sql`       | RLS on storage.objects for all 4 buckets             |
+| 9     | `0009_document_upload_logs.sql`   | Audit table for every upload attempt                 |
 
 After running migrations:
 

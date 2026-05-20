@@ -88,5 +88,22 @@
     "stat_members": "ผู้ใช้",
     "stat_ai_usage": "การใช้งาน AI เดือนนี้",
     "trial_banner": "คุณกำลังใช้งานในช่วงทดลอง เหลืออีก {days} วัน"
+  },
+  "documents": {
+    "page_title": "เอกสาร",
+    "page_subtitle": "อัปโหลด จัดเก็บ และจัดการเอกสารของสถานศึกษา",
+    "upload_title": "อัปโหลดเอกสาร",
+    "upload_description": "ลากไฟล์มาวางที่นี่ หรือเลือกจากเครื่อง รองรับ PDF, DOCX, XLSX, PPTX, รูปภาพ (สูงสุด 50 MB ต่อไฟล์)",
+    "upload_queue": "คิว ({count})",
+    "upload_clear_completed": "ล้างที่เสร็จแล้ว",
+    "dropzone_aria": "พื้นที่ลากวางไฟล์เพื่ออัปโหลด",
+    "dropzone_title": "ลากไฟล์มาวางที่นี่",
+    "dropzone_subtitle": "PDF · DOCX · XLSX · PPTX · PNG · JPG",
+    "dropzone_max": "อัปโหลดได้สูงสุด {count} ไฟล์ต่อครั้ง",
+    "dropzone_button": "เลือกไฟล์",
+    "list_title": "เอกสารทั้งหมด",
+    "list_count": "{count} ไฟล์",
+    "list_empty_title": "ยังไม่มีเอกสาร",
+    "list_empty_description": "อัปโหลดไฟล์แรกของคุณด้านบนเพื่อเริ่มต้น"
   }
 }

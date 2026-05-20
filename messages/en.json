@@ -88,5 +88,22 @@
     "stat_members": "Members",
     "stat_ai_usage": "AI usage this month",
     "trial_banner": "You're on a trial — {days} days remaining"
+  },
+  "documents": {
+    "page_title": "Documents",
+    "page_subtitle": "Upload, store, and manage your institution's documents.",
+    "upload_title": "Upload documents",
+    "upload_description": "Drag files here or pick them from your device. PDF, DOCX, XLSX, PPTX, images. Max 50 MB each.",
+    "upload_queue": "Queue ({count})",
+    "upload_clear_completed": "Clear completed",
+    "dropzone_aria": "File upload drag-and-drop area",
+    "dropzone_title": "Drag files here",
+    "dropzone_subtitle": "PDF · DOCX · XLSX · PPTX · PNG · JPG",
+    "dropzone_max": "Up to {count} files per upload",
+    "dropzone_button": "Choose files",
+    "list_title": "All documents",
+    "list_count": "{count} files",
+    "list_empty_title": "No documents yet",
+    "list_empty_description": "Upload your first file above to get started."
   }
 }
