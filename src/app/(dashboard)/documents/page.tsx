@@ -1,38 +1,46 @@
-import { Suspense } from "react";
 import { getTranslations } from "next-intl/server";
-import { Skeleton } from "@/components/ui/skeleton";
 import { requireSession } from "@/lib/auth/session";
-import { DocumentList } from "@/features/documents/components/document-list";
-import { UploadPanel } from "@/features/documents/components/upload-panel";
+import { can } from "@/lib/auth/rbac";
+import { DocumentsShell } from "@/features/documents/components/documents-shell";
+import { parseDocumentFilters } from "@/features/documents/hooks/use-document-filters";
+import {
+  listCategories,
+  listDepartmentsForFilter,
+  listDocuments,
+} from "@/features/documents/queries";
 
-export default async function DocumentsPage() {
-  // Layout already requires a session, but calling again here narrows the
-  // type for any future per-permission gating on this page.
-  await requireSession("/documents");
+interface PageProps {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function DocumentsPage({ searchParams }: PageProps) {
+  const session = await requireSession("/documents");
   const t = await getTranslations("documents");
+  const params = await searchParams;
+  const filters = parseDocumentFilters(params);
+
+  // Three parallel reads — RSC streams the result of all of them.
+  const [list, categories, departments] = await Promise.all([
+    listDocuments(filters),
+    listCategories(),
+    listDepartmentsForFilter(),
+  ]);
 
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-7xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold">{t("page_title")}</h1>
         <p className="text-muted-foreground mt-1 text-sm">{t("page_subtitle")}</p>
       </div>
 
-      <UploadPanel />
-
-      <Suspense fallback={<DocumentListSkeleton />}>
-        <DocumentList />
-      </Suspense>
-    </div>
-  );
-}
-
-function DocumentListSkeleton() {
-  return (
-    <div className="space-y-2">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <Skeleton key={i} className="h-16 w-full rounded-lg" />
-      ))}
+      <DocumentsShell
+        rows={list.rows}
+        total={list.total}
+        pageCount={list.pageCount}
+        categories={categories}
+        departments={departments}
+        canManageCategories={can(session.role, "department", "create")}
+      />
     </div>
   );
 }

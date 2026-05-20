@@ -13,6 +13,7 @@ Run in order from the Supabase SQL Editor (or `supabase db push` if you have the
 | 7     | `0007_align_profiles_schema.sql`  | Reconcile pre-existing profiles table from prior setup |
 | 8     | `0008_storage_policies.sql`       | RLS on storage.objects for all 4 buckets             |
 | 9     | `0009_document_upload_logs.sql`   | Audit table for every upload attempt                 |
+| 10    | `0010_document_categories.sql`    | Tenant-managed category taxonomy for documents       |
 
 After running migrations:
 
