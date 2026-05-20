@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s · KitithatITMan",
   },
   description: "Multi-tenant AI office platform for Thai educational institutions.",
-  icons: { icon: "/favicon.ico" },
+  // Favicon is auto-generated from src/app/icon.tsx via Next's metadata file convention.
 };
 
 export const viewport: Viewport = {
