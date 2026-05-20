@@ -1,7 +1,7 @@
 import { Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth/session";
 
 export default async function AdminPage() {
   // Anything below this line is guaranteed to run for an

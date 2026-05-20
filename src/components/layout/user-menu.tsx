@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { signOutAction } from "@/lib/auth";
+import { signOutAction } from "@/lib/auth/actions";
 
 interface UserMenuProps {
   email: string;

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { dashboardNav } from "@/config/navigation";
-import { getSession } from "@/lib/auth";
+import { getSession } from "@/lib/auth/session";
 import { SidebarItem } from "./sidebar-item";
 
 export async function Sidebar() {

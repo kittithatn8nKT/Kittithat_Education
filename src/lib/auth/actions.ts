@@ -1,14 +1,26 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import {
-  ACTIVE_INSTITUTION_COOKIE,
-  writeActiveInstitutionId,
-  clearActiveInstitution,
-} from "./active-institution";
+import { ACTIVE_INSTITUTION_COOKIE } from "./active-institution";
 import { getSession } from "./session";
+
+async function writeActiveInstitutionId(institutionId: string) {
+  const store = await cookies();
+  store.set(ACTIVE_INSTITUTION_COOKIE, institutionId, {
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365, // 1 year
+  });
+}
+
+async function clearActiveInstitution() {
+  const store = await cookies();
+  store.delete(ACTIVE_INSTITUTION_COOKIE);
+}
 
 /**
  * Switch the active institution for the current user. Validates that
@@ -36,6 +48,3 @@ export async function signOutAction() {
   await clearActiveInstitution();
   redirect("/login");
 }
-
-// Re-export the cookie name so client code can read it for navigation hints.
-export { ACTIVE_INSTITUTION_COOKIE };

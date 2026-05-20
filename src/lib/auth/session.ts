@@ -1,12 +1,13 @@
 import "server-only";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getMyMemberships } from "@/features/institutions";
 import type { MemberRole, Membership, Profile } from "@/types/database";
 import { ADMIN_ROLES, can, type Action, type Resource } from "./rbac";
-import { pickActiveMembership, readActiveInstitutionId } from "./active-institution";
+import { ACTIVE_INSTITUTION_COOKIE, pickActiveMembership } from "./active-institution";
 
 /**
  * The session shape used everywhere on the server. Fields are computed
@@ -24,6 +25,11 @@ export interface AuthenticatedSession {
 }
 
 export type Session = AuthenticatedSession | null;
+
+async function readActiveInstitutionId(): Promise<string | null> {
+  const store = await cookies();
+  return store.get(ACTIVE_INSTITUTION_COOKIE)?.value ?? null;
+}
 
 /**
  * Read the current session. Returns null if no user, or if the user has no
@@ -66,9 +72,6 @@ export async function getSession(): Promise<Session> {
  * Require a fully-authenticated session. Redirects:
  *   - no user        → /login?next=<current>
  *   - no membership  → /onboarding
- *
- * The `next` param is best-effort; call this from server components where
- * the calling URL is available via the page's `searchParams` / cookies.
  */
 export async function requireSession(redirectTo = "/dashboard"): Promise<AuthenticatedSession> {
   const session = await getSession();
@@ -78,7 +81,6 @@ export async function requireSession(redirectTo = "/dashboard"): Promise<Authent
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) redirect(`/login?next=${encodeURIComponent(redirectTo)}`);
-    // user exists but no memberships
     redirect("/onboarding");
   }
   return session;

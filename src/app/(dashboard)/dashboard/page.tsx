@@ -2,7 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { CheckSquare, FileText, Sparkles, Users } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { requireSession, sessionCan } from "@/lib/auth";
+import { requireSession, sessionCan } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function DashboardHomePage({
