@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Badge } from "@/components/ui/badge";
 import { LanguageSwitcher } from "./language-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
@@ -15,15 +16,15 @@ interface TopbarProps {
 export function Topbar({ userEmail, fullName, membership }: TopbarProps) {
   const t = useTranslations();
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 px-6 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
+    <header className="bg-background/80 border-border sticky top-0 z-30 flex h-16 items-center justify-between border-b px-6 backdrop-blur">
       <div className="flex flex-col">
-        <span className="text-sm font-semibold leading-tight">
+        <span className="text-sm leading-tight font-semibold">
           {membership?.institution_name ?? t("common.app_name")}
         </span>
         {membership && (
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <Badge variant="secondary" className="mt-0.5 w-fit text-[10px]">
             {membership.role}
-          </span>
+          </Badge>
         )}
       </div>
       <div className="flex items-center gap-2">

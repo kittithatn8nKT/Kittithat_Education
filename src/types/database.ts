@@ -10,12 +10,7 @@ export type MemberRole =
 
 export type InstitutionType = "primary" | "secondary" | "vocational" | "university";
 
-export type SubscriptionStatus =
-  | "trial"
-  | "active"
-  | "past_due"
-  | "suspended"
-  | "cancelled";
+export type SubscriptionStatus = "trial" | "active" | "past_due" | "suspended" | "cancelled";
 
 export type Locale = "th" | "en";
 

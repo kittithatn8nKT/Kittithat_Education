@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { OnboardingForm } from "./onboarding-form";
 
@@ -11,7 +12,6 @@ export default async function OnboardingPage() {
 
   if (!user) redirect("/login?next=/onboarding");
 
-  // If the user already has any active membership, skip onboarding.
   const { data: memberships } = await supabase
     .from("my_memberships")
     .select("institution_id")
@@ -24,17 +24,17 @@ export default async function OnboardingPage() {
   const t = await getTranslations();
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="bg-muted/30 min-h-screen">
       <div className="mx-auto max-w-2xl px-6 py-12">
-        <div className="card">
-          <h1 className="text-2xl font-bold">{t("onboarding.title")}</h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            {t("onboarding.subtitle")}
-          </p>
-          <div className="mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">{t("onboarding.title")}</CardTitle>
+            <CardDescription>{t("onboarding.subtitle")}</CardDescription>
+          </CardHeader>
+          <CardContent>
             <OnboardingForm />
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function DepartmentsPage() {
   const t = await getTranslations();
@@ -16,31 +18,30 @@ export default async function DepartmentsPage() {
         <h1 className="text-2xl font-bold">{t("dashboard.nav_departments")}</h1>
       </div>
 
-      <div className="card">
+      <Card>
         {departments && departments.length > 0 ? (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
-            {departments.map((d) => (
-              <li key={d.id} className="flex items-center justify-between py-3">
-                <div>
-                  <p className="text-sm font-medium">{d.name}</p>
-                  {d.name_en && (
-                    <p className="text-xs text-slate-500">{d.name_en}</p>
-                  )}
-                </div>
-                {d.code && (
-                  <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                    {d.code}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
+          <CardContent>
+            <ul className="divide-border divide-y">
+              {departments.map((d) => (
+                <li key={d.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="text-sm font-medium">{d.name}</p>
+                    {d.name_en && <p className="text-muted-foreground text-xs">{d.name_en}</p>}
+                  </div>
+                  {d.code && <Badge variant="outline">{d.code}</Badge>}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
         ) : (
-          <p className="text-sm text-slate-500">
-            No departments yet. Department CRUD lands in Phase 2.
-          </p>
+          <>
+            <CardHeader>
+              <CardTitle className="text-base">No departments yet</CardTitle>
+              <CardDescription>Department CRUD lands in Phase 2.</CardDescription>
+            </CardHeader>
+          </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

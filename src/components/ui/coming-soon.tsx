@@ -1,4 +1,6 @@
 import { Construction } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export function ComingSoon({
   title,
@@ -11,18 +13,16 @@ export function ComingSoon({
 }) {
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="card text-center">
-        <Construction className="mx-auto h-10 w-10 text-amber-500" />
-        <h1 className="mt-4 text-xl font-bold">{title}</h1>
-        {description && (
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            {description}
-          </p>
-        )}
-        <p className="mt-3 text-xs uppercase tracking-wide text-blue-600 dark:text-blue-400">
-          {phase}
-        </p>
-      </div>
+      <Card>
+        <CardHeader className="items-center text-center">
+          <Construction className="text-muted-foreground mx-auto h-10 w-10" />
+          <CardTitle className="mt-4">{title}</CardTitle>
+          {description && <CardDescription>{description}</CardDescription>}
+        </CardHeader>
+        <CardContent className="flex justify-center">
+          <Badge variant="secondary">{phase}</Badge>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -3,6 +3,17 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { Locale } from "@/types/database";
 
@@ -23,24 +34,20 @@ export function ProfileForm({ initial }: ProfileFormProps) {
   const [fullNameTh, setFullNameTh] = useState(initial.full_name_th);
   const [phone, setPhone] = useState(initial.phone);
   const [lang, setLang] = useState<Locale>(initial.preferred_language);
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
-    setSaved(false);
     startTransition(async () => {
       const supabase = createSupabaseBrowserClient();
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) {
-        setError("Not authenticated");
+        toast.error("Not authenticated");
         return;
       }
-      const { error: upErr } = await supabase
+      const { error } = await supabase
         .from("profiles")
         .update({
           full_name: fullName || null,
@@ -50,76 +57,52 @@ export function ProfileForm({ initial }: ProfileFormProps) {
         })
         .eq("id", user.id);
 
-      if (upErr) {
-        setError(upErr.message);
+      if (error) {
+        toast.error(error.message);
         return;
       }
-      setSaved(true);
+      toast.success("Saved");
       router.refresh();
     });
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="full_name_th" className="label">
-          {t("auth.full_name_th")}
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="full_name_th">{t("auth.full_name_th")}</Label>
+        <Input
           id="full_name_th"
-          className="input"
           value={fullNameTh}
           onChange={(e) => setFullNameTh(e.target.value)}
         />
       </div>
 
-      <div>
-        <label htmlFor="full_name" className="label">
-          {t("auth.full_name")}
-        </label>
-        <input
-          id="full_name"
-          className="input"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
+      <div className="space-y-2">
+        <Label htmlFor="full_name">{t("auth.full_name")}</Label>
+        <Input id="full_name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
       </div>
 
-      <div>
-        <label htmlFor="phone" className="label">
-          Phone
-        </label>
-        <input
-          id="phone"
-          className="input"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
+      <div className="space-y-2">
+        <Label htmlFor="phone">Phone</Label>
+        <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
       </div>
 
-      <div>
-        <label htmlFor="lang" className="label">
-          {t("common.language")}
-        </label>
-        <select
-          id="lang"
-          className="input"
-          value={lang}
-          onChange={(e) => setLang(e.target.value as Locale)}
-        >
-          <option value="th">ไทย</option>
-          <option value="en">English</option>
-        </select>
+      <div className="space-y-2">
+        <Label htmlFor="lang">{t("common.language")}</Label>
+        <Select value={lang} onValueChange={(v) => setLang(v as Locale)}>
+          <SelectTrigger id="lang">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="th">ไทย</SelectItem>
+            <SelectItem value="en">English</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
-      {saved && (
-        <p className="text-sm text-green-600 dark:text-green-400">Saved.</p>
-      )}
-
-      <button type="submit" className="btn-primary" disabled={isPending}>
+      <Button type="submit" disabled={isPending}>
         {isPending ? t("common.loading") : t("common.save")}
-      </button>
+      </Button>
     </form>
   );
 }

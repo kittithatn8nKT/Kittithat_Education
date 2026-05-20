@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { FileText, Users, Sparkles, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function LandingPage() {
   const t = await getTranslations();
@@ -24,59 +26,59 @@ export default async function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
-      <header className="border-b border-slate-200 dark:border-slate-800">
+    <div className="from-background to-muted/40 min-h-screen bg-gradient-to-b">
+      <header className="border-border border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href="/" className="text-xl font-bold tracking-tight">
             {t("common.app_name")}
           </Link>
-          <nav className="flex items-center gap-3">
-            <Link href="/login" className="btn-ghost">
+          <nav className="flex items-center gap-2">
+            <Button variant="ghost" render={<Link href="/login" />}>
               {t("auth.login_button")}
-            </Link>
-            <Link href="/signup" className="btn-primary">
-              {t("landing.cta_primary")}
-            </Link>
+            </Button>
+            <Button render={<Link href="/signup" />}>{t("landing.cta_primary")}</Button>
           </nav>
         </div>
       </header>
 
       <main>
         <section className="mx-auto max-w-6xl px-6 py-24 text-center">
-          <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
             {t("landing.hero_title")}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
+          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg">
             {t("landing.hero_subtitle")}
           </p>
-          <div className="mt-10 flex items-center justify-center gap-4">
-            <Link href="/signup" className="btn-primary px-6 py-3 text-base">
-              {t("landing.cta_primary")} <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link href="#features" className="btn-secondary px-6 py-3 text-base">
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Button size="lg" render={<Link href="/signup" />}>
+              {t("landing.cta_primary")}
+              <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+            <Button size="lg" variant="secondary" render={<Link href="#features" />}>
               {t("landing.cta_secondary")}
-            </Link>
+            </Button>
           </div>
         </section>
 
         <section id="features" className="mx-auto max-w-6xl px-6 pb-24">
           <div className="grid gap-6 md:grid-cols-3">
             {features.map(({ icon: Icon, title, body }) => (
-              <div key={title} className="card">
-                <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="text-lg font-semibold">{title}</h3>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                  {body}
-                </p>
-              </div>
+              <Card key={title}>
+                <CardHeader>
+                  <div className="bg-primary/10 text-primary inline-flex h-10 w-10 items-center justify-center rounded-lg">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <CardTitle className="mt-4">{title}</CardTitle>
+                  <CardDescription>{body}</CardDescription>
+                </CardHeader>
+                <CardContent />
+              </Card>
             ))}
           </div>
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 py-8 text-center text-sm text-slate-500 dark:border-slate-800">
+      <footer className="text-muted-foreground border-border border-t py-8 text-center text-sm">
         © {new Date().getFullYear()} {t("common.app_name")} · {t("common.tagline")}
       </footer>
     </div>

@@ -1,5 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function MembersPage() {
   const t = await getTranslations();
@@ -17,25 +19,32 @@ export default async function MembersPage() {
         <h1 className="text-2xl font-bold">{t("dashboard.nav_members")}</h1>
       </div>
 
-      <div className="card">
+      <Card>
         {members && members.length > 0 ? (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
-            {members.map((m) => (
-              <li key={m.id} className="flex items-center justify-between py-3">
-                <div>
-                  <p className="text-sm font-mono text-slate-500">{m.user_id.slice(0, 8)}…</p>
-                  {m.title && <p className="text-xs text-slate-500">{m.title}</p>}
-                </div>
-                <span className="rounded bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
-                  {m.role}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <CardContent>
+            <ul className="divide-border divide-y">
+              {members.map((m) => (
+                <li key={m.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="text-muted-foreground font-mono text-sm">
+                      {m.user_id.slice(0, 8)}…
+                    </p>
+                    {m.title && <p className="text-muted-foreground text-xs">{m.title}</p>}
+                  </div>
+                  <Badge>{m.role}</Badge>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
         ) : (
-          <p className="text-sm text-slate-500">No members yet.</p>
+          <>
+            <CardHeader>
+              <CardTitle className="text-base">No members yet</CardTitle>
+              <CardDescription>Invite teammates from the admin panel in Phase 2.</CardDescription>
+            </CardHeader>
+          </>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

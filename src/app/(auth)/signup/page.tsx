@@ -1,26 +1,34 @@
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { SignupForm } from "./signup-form";
 
 export default async function SignupPage() {
   const t = await getTranslations();
   return (
-    <div className="card">
-      <h1 className="text-2xl font-bold">{t("auth.signup_title")}</h1>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-        {t("common.tagline")}
-      </p>
-
-      <div className="mt-6">
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-2xl">{t("auth.signup_title")}</CardTitle>
+        <CardDescription>{t("common.tagline")}</CardDescription>
+      </CardHeader>
+      <CardContent>
         <SignupForm />
-      </div>
-
-      <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-        {t("auth.have_account")}{" "}
-        <Link href="/login" className="font-medium text-blue-600 hover:underline">
-          {t("auth.go_login")}
-        </Link>
-      </p>
-    </div>
+      </CardContent>
+      <CardFooter className="justify-center">
+        <p className="text-muted-foreground text-sm">
+          {t("auth.have_account")}{" "}
+          <Link href="/login" className="text-primary font-medium hover:underline">
+            {t("auth.go_login")}
+          </Link>
+        </p>
+      </CardFooter>
+    </Card>
   );
 }

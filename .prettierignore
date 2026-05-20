@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+build
+dist
+.vercel
+.claude
+package-lock.json
+supabase/bundle.sql
+*.md

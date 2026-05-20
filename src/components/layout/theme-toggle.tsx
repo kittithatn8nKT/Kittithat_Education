@@ -2,15 +2,29 @@
 
 import { useTheme } from "next-themes";
 import { Moon, Sun, Monitor } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+
+// useSyncExternalStore is the React 19-blessed primitive for "am I in the
+// browser yet?" — it doesn't fire setState during effects, so the new
+// react-hooks/set-state-in-effect rule is satisfied.
+function subscribeNoop() {
+  return () => {};
+}
+function useHasMounted() {
+  return useSyncExternalStore(
+    subscribeNoop,
+    () => true, // client snapshot — always true once hydrated
+    () => false // server snapshot — never mounted on the server
+  );
+}
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const t = useTranslations();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useHasMounted();
 
-  useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="h-9 w-9" />;
 
   function cycle() {
@@ -20,18 +34,23 @@ export function ThemeToggle() {
   }
 
   const icon =
-    theme === "dark" ? <Moon className="h-4 w-4" /> :
-    theme === "light" ? <Sun className="h-4 w-4" /> :
-    <Monitor className="h-4 w-4" />;
+    theme === "dark" ? (
+      <Moon className="h-4 w-4" />
+    ) : theme === "light" ? (
+      <Sun className="h-4 w-4" />
+    ) : (
+      <Monitor className="h-4 w-4" />
+    );
 
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
+      size="icon"
       onClick={cycle}
       aria-label={t("common.theme")}
-      className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
     >
       {icon}
-    </button>
+    </Button>
   );
 }

@@ -2,13 +2,9 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
-import type { Membership } from "@/types/database";
+import { getMyMemberships } from "@/features/institutions";
 
-export default async function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -18,12 +14,8 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  const { data: memberships } = await supabase
-    .from("my_memberships")
-    .select("*")
-    .order("institution_name");
-
-  if (!memberships || memberships.length === 0) {
+  const memberships = await getMyMemberships();
+  if (memberships.length === 0) {
     redirect("/onboarding");
   }
 
@@ -33,19 +25,14 @@ export default async function DashboardLayout({
     .eq("id", user.id)
     .single();
 
-  const activeMembership = memberships[0] as Membership;
-  const displayName =
-    profile?.full_name_th || profile?.full_name || user.email || null;
+  const activeMembership = memberships[0];
+  const displayName = profile?.full_name_th || profile?.full_name || user.email || null;
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="bg-background flex min-h-screen">
       <Sidebar />
       <div className="flex flex-1 flex-col">
-        <Topbar
-          userEmail={user.email ?? ""}
-          fullName={displayName}
-          membership={activeMembership}
-        />
+        <Topbar userEmail={user.email ?? ""} fullName={displayName} membership={activeMembership} />
         <main className="flex-1 p-6">{children}</main>
       </div>
     </div>

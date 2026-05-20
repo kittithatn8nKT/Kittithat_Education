@@ -3,6 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
@@ -13,20 +18,18 @@ export function LoginForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError(null);
     startTransition(async () => {
       const supabase = createSupabaseBrowserClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-      if (signInError) {
-        setError(t("auth.invalid_credentials"));
+      if (error) {
+        toast.error(t("auth.invalid_credentials"));
         return;
       }
       router.push(nextUrl);
@@ -46,64 +49,44 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label htmlFor="email" className="label">
-          {t("auth.email")}
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="email">{t("auth.email")}</Label>
+        <Input
           id="email"
           type="email"
           required
           autoComplete="email"
-          className="input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
-      <div>
-        <label htmlFor="password" className="label">
-          {t("auth.password")}
-        </label>
-        <input
+      <div className="space-y-2">
+        <Label htmlFor="password">{t("auth.password")}</Label>
+        <Input
           id="password"
           type="password"
           required
           autoComplete="current-password"
-          className="input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </div>
 
-      {error && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
-          {error}
-        </p>
-      )}
-
-      <button type="submit" className="btn-primary w-full" disabled={isPending}>
+      <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? t("common.loading") : t("auth.login_button")}
-      </button>
+      </Button>
 
-      <div className="relative my-4">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-slate-200 dark:border-slate-700" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-slate-500 dark:bg-slate-900">
-            {t("auth.or_continue_with")}
-          </span>
-        </div>
+      <div className="relative">
+        <Separator />
+        <span className="bg-card text-muted-foreground absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 px-2 text-xs uppercase">
+          {t("auth.or_continue_with")}
+        </span>
       </div>
 
-      <button
-        type="button"
-        onClick={handleGoogle}
-        className="btn-secondary w-full"
-      >
+      <Button type="button" variant="outline" className="w-full" onClick={handleGoogle}>
         {t("auth.google")}
-      </button>
+      </Button>
     </form>
   );
 }

@@ -1,9 +1,18 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { LogOut, User } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface UserMenuProps {
   email: string;
@@ -12,16 +21,6 @@ interface UserMenuProps {
 
 export function UserMenu({ email, fullName }: UserMenuProps) {
   const t = useTranslations();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function onClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
-  }, []);
 
   const initials = (fullName || email)
     .split(/\s+/)
@@ -31,40 +30,39 @@ export function UserMenu({ email, fullName }: UserMenuProps) {
     .toUpperCase();
 
   return (
-    <div className="relative" ref={ref}>
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-blue-600 text-sm font-semibold text-white"
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        render={
+          <Button variant="ghost" size="icon-lg" className="rounded-full" aria-label="User menu" />
+        }
       >
-        {initials || "?"}
-      </button>
-
-      {open && (
-        <div className="absolute right-0 top-11 z-50 w-56 overflow-hidden rounded-lg border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-900">
-          <div className="border-b border-slate-200 px-4 py-3 dark:border-slate-800">
-            <p className="truncate text-sm font-medium">{fullName || email}</p>
-            <p className="truncate text-xs text-slate-500 dark:text-slate-400">{email}</p>
-          </div>
-          <Link
-            href="/settings/profile"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-slate-800"
+        <Avatar className="h-9 w-9">
+          <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+            {initials || "?"}
+          </AvatarFallback>
+        </Avatar>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="flex flex-col">
+          <span className="truncate text-sm font-medium">{fullName || email}</span>
+          <span className="text-muted-foreground truncate text-xs font-normal">{email}</span>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link href="/settings/profile" />}>
+          <User className="mr-2 h-4 w-4" />
+          {t("common.profile")}
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <form action="/auth/signout" method="post">
+          <DropdownMenuItem
+            variant="destructive"
+            render={<button type="submit" className="w-full" />}
           >
-            <User className="h-4 w-4" />
-            {t("common.profile")}
-          </Link>
-          <form action="/auth/signout" method="post">
-            <button
-              type="submit"
-              className="flex w-full items-center gap-2 border-t border-slate-200 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 dark:border-slate-800 dark:hover:bg-red-900/20"
-            >
-              <LogOut className="h-4 w-4" />
-              {t("common.logout")}
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+            <LogOut className="mr-2 h-4 w-4" />
+            {t("common.logout")}
+          </DropdownMenuItem>
+        </form>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

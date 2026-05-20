@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
-export default async function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default async function AuthLayout({ children }: { children: React.ReactNode }) {
   const t = await getTranslations();
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="bg-muted/30 min-h-screen">
       <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-8">
         <Link href="/" className="text-lg font-bold">
           {t("common.app_name")}
